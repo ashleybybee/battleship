@@ -47,6 +47,7 @@ export default function App() {
   const [winner, setWinner] = useState<'player' | 'ai' | null>(null);
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isAIThinking, setIsAIThinking] = useState(false);
 
   const addLog = useCallback((message: string, type: LogEntry['type']) => {
     setLogs((prev) => [...prev, { message, type }]);
@@ -171,6 +172,7 @@ export default function App() {
       }
 
       setIsPlayerTurn(false);
+      setIsAIThinking(true);
     },
     [isPlayerTurn, phase, aiGrid, aiShips, addLog, addNotification]
   );
@@ -180,6 +182,7 @@ export default function App() {
     if (isPlayerTurn || phase !== 'battle') return;
 
     const timer = setTimeout(() => {
+      setIsAIThinking(false);
       const aiResult = aiTurn(playerGrid, playerShips, aiStateVal);
 
       const aiLabel = coordToLabel(aiResult.row, aiResult.col);
@@ -203,7 +206,7 @@ export default function App() {
       setPlayerShips(aiResult.ships);
       setAiState(aiResult.aiState);
       setIsPlayerTurn(true);
-    }, 700);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [isPlayerTurn, phase, playerGrid, playerShips, aiStateVal, addLog, addNotification]);
@@ -222,6 +225,7 @@ export default function App() {
     setLogs([]);
     setWinner(null);
     setIsPlayerTurn(true);
+    setIsAIThinking(false);
     setNotifications([]);
   }, []);
 
@@ -253,12 +257,12 @@ export default function App() {
             {phase === 'battle' && (
               <span
                 className={`text-sm font-bold px-4 py-1.5 rounded-full border ${
-                  isPlayerTurn
+                  isPlayerTurn && !isAIThinking
                     ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30'
-                    : 'bg-red-600/20 text-red-400 border-red-500/30'
+                    : 'bg-red-600/20 text-red-400 border-red-500/30 animate-pulse'
                 }`}
               >
-                {isPlayerTurn ? 'Your Turn' : 'AI Thinking...'}
+                {isAIThinking ? 'AI is thinking...' : isPlayerTurn ? 'Your Turn' : 'AI Firing...'}
               </span>
             )}
             {phase === 'setup' && (
@@ -316,53 +320,56 @@ export default function App() {
           </div>
         )}
 
-        {/* Grid area */}
-        <div className="flex flex-wrap gap-6 lg:gap-10 justify-center items-start">
-          {/* Player grid */}
-          <div className="flex flex-col items-center">
-            <h2 className="text-lg font-bold mb-3 text-blue-400 flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-400 rounded-full" />
-              Your Fleet
-            </h2>
-            <Grid
-              grid={playerGrid}
-              isEnemy={false}
-              preview={phase === 'setup' ? preview : null}
-              onCellClick={phase === 'setup' ? handleSetupClick : undefined}
-              onCellHover={phase === 'setup' ? handleSetupHover : undefined}
-              onMouseLeave={() => setPreview(null)}
-              disabled={phase !== 'setup'}
-            />
-            {playerShips.length > 0 && (
-              <div className="mt-3 w-full">
-                <FleetStatus ships={playerShips} label="Your Ships" />
+        {/* Grid area + Combat Log sidebar */}
+        <div className="flex flex-wrap xl:flex-nowrap gap-6 lg:gap-10 justify-center items-start">
+          {/* Grids */}
+          <div className="flex flex-wrap gap-6 lg:gap-10 justify-center items-start">
+            {/* Player grid */}
+            <div className="flex flex-col items-center">
+              <h2 className="text-lg font-bold mb-3 text-blue-400 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-400 rounded-full" />
+                Your Fleet
+              </h2>
+              <Grid
+                grid={playerGrid}
+                isEnemy={false}
+                preview={phase === 'setup' ? preview : null}
+                onCellClick={phase === 'setup' ? handleSetupClick : undefined}
+                onCellHover={phase === 'setup' ? handleSetupHover : undefined}
+                onMouseLeave={() => setPreview(null)}
+                disabled={phase !== 'setup'}
+              />
+              {playerShips.length > 0 && (
+                <div className="mt-3 w-full">
+                  <FleetStatus ships={playerShips} label="Your Ships" />
+                </div>
+              )}
+            </div>
+
+            {/* Enemy grid (only in battle/gameover) */}
+            {(phase === 'battle' || phase === 'gameover') && (
+              <div className="flex flex-col items-center">
+                <h2 className="text-lg font-bold mb-3 text-red-400 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-red-400 rounded-full" />
+                  Enemy Waters
+                </h2>
+                <Grid
+                  grid={aiGrid}
+                  isEnemy={true}
+                  onCellClick={handlePlayerFire}
+                  disabled={!isPlayerTurn || isAIThinking || phase === 'gameover'}
+                />
+                <div className="mt-3 w-full">
+                  <FleetStatus ships={aiShips} label="Enemy Fleet" hideUnsunk />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Enemy grid (only in battle/gameover) */}
-          {(phase === 'battle' || phase === 'gameover') && (
-            <div className="flex flex-col items-center">
-              <h2 className="text-lg font-bold mb-3 text-red-400 flex items-center gap-2">
-                <span className="w-2 h-2 bg-red-400 rounded-full" />
-                Enemy Waters
-              </h2>
-              <Grid
-                grid={aiGrid}
-                isEnemy={true}
-                onCellClick={handlePlayerFire}
-                disabled={!isPlayerTurn || phase === 'gameover'}
-              />
-              <div className="mt-3 w-full">
-                <FleetStatus ships={aiShips} label="Enemy Fleet" hideUnsunk />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Log panel */}
-        <div className="mt-8 max-w-2xl mx-auto">
-          <GameLog logs={logs} />
+          {/* Combat Log sidebar */}
+          <div className="w-full xl:w-80 xl:min-w-[20rem] shrink-0">
+            <GameLog logs={logs} />
+          </div>
         </div>
       </main>
 
