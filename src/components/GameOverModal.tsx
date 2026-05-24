@@ -6,10 +6,10 @@ interface GameOverModalProps {
 export default function GameOverModal({ winner, onRestart }: GameOverModalProps) {
   const isWin = winner === 'player';
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-slate-800 border border-slate-600 rounded-xl p-8 text-center max-w-md mx-4 shadow-2xl">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-slate-800 border border-cyan-900/40 rounded-2xl p-8 text-center max-w-md mx-4 shadow-2xl shadow-black/50">
         <div className="text-6xl mb-4">{isWin ? '🎉' : '💀'}</div>
-        <h2 className="text-3xl font-bold mb-2 text-white">
+        <h2 className={`text-3xl font-bold mb-2 ${isWin ? 'text-emerald-400' : 'text-red-400'}`}>
           {isWin ? 'Victory!' : 'Defeat!'}
         </h2>
         <p className="text-slate-300 mb-6">
@@ -19,7 +19,7 @@ export default function GameOverModal({ winner, onRestart }: GameOverModalProps)
         </p>
         <button
           onClick={onRestart}
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors"
+          className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-cyan-900/30"
         >
           Play Again
         </button>

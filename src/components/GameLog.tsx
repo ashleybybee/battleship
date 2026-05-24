@@ -14,7 +14,7 @@ function getLogColor(type: LogEntry['type']): string {
     case 'sunk':
       return 'text-orange-400 font-semibold';
     case 'win':
-      return 'text-green-400 font-bold';
+      return 'text-emerald-400 font-bold';
     case 'loss':
       return 'text-red-500 font-bold';
     case 'info':
@@ -33,13 +33,13 @@ export default function GameLog({ logs }: GameLogProps) {
   }, [logs]);
 
   return (
-    <div className="bg-slate-800 border border-slate-600 rounded-lg p-3 w-full">
-      <h3 className="text-sm font-semibold text-slate-300 mb-2 uppercase tracking-wide">
+    <div className="bg-slate-800/50 border border-cyan-900/30 rounded-xl p-3 w-full">
+      <h3 className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">
         Battle Log
       </h3>
       <div
         ref={scrollRef}
-        className="h-48 overflow-y-auto space-y-1 text-sm font-mono"
+        className="h-52 overflow-y-auto space-y-1 text-xs font-mono scrollbar-thin"
       >
         {logs.length === 0 && (
           <p className="text-slate-500 italic">No actions yet...</p>

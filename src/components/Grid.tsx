@@ -26,14 +26,17 @@ export default function Grid({
   );
 
   return (
-    <div className="inline-block" onMouseLeave={onMouseLeave}>
+    <div
+      className="inline-block rounded-lg overflow-hidden shadow-lg shadow-black/30"
+      onMouseLeave={onMouseLeave}
+    >
       {/* Column headers */}
       <div className="flex">
-        <div className="w-8 h-8" />
+        <div className="w-9 h-9" />
         {Array.from({ length: GRID_SIZE }, (_, i) => (
           <div
             key={i}
-            className="w-8 h-8 flex items-center justify-center text-xs font-semibold text-slate-300"
+            className="w-9 h-9 flex items-center justify-center text-xs font-semibold text-cyan-300/70"
           >
             {i + 1}
           </div>
@@ -42,7 +45,7 @@ export default function Grid({
       {/* Rows */}
       {grid.map((row, rowIdx) => (
         <div key={rowIdx} className="flex">
-          <div className="w-8 h-8 flex items-center justify-center text-xs font-semibold text-slate-300">
+          <div className="w-9 h-9 flex items-center justify-center text-xs font-semibold text-cyan-300/70">
             {ROW_LABELS[rowIdx]}
           </div>
           {row.map((cell, colIdx) => {
