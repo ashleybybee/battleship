@@ -15,7 +15,7 @@ function getCellClasses(
   isPreviewInvalid?: boolean
 ): string {
   const base =
-    'w-9 h-9 border border-cyan-900/40 flex items-center justify-center text-xs font-bold transition-all duration-150 select-none';
+    'aspect-square w-full border border-cyan-900/40 flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all duration-150 select-none touch-manipulation';
 
   if (isPreview) {
     return `${base} ${isPreviewInvalid ? 'bg-red-400/50 border-red-500/60' : 'bg-emerald-400/50 border-emerald-500/60'}`;

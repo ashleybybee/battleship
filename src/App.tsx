@@ -75,7 +75,7 @@ export default function App() {
     [currentShipDef, orientation, playerGrid]
   );
 
-  // Setup: place ship
+  // Setup: place ship (click-to-select, click-to-place)
   const handleSetupClick = useCallback(
     (row: number, col: number) => {
       if (!currentShipDef) return;
@@ -240,18 +240,18 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       {/* Header */}
-      <header className="bg-slate-900/80 backdrop-blur-sm border-b border-cyan-900/30 py-4">
-        <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+      <header className="bg-slate-900/80 backdrop-blur-sm border-b border-cyan-900/30 py-3 sm:py-4">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 flex items-center justify-between">
+          <h1 className="text-lg sm:text-2xl font-bold tracking-tight flex items-center gap-2">
             <span className="text-cyan-400">⚓</span>
             <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
               Battleship
             </span>
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {phase === 'battle' && (
               <span
-                className={`text-sm font-semibold px-4 py-1.5 rounded-full border ${
+                className={`text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border ${
                   isPlayerTurn
                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                     : 'bg-red-500/10 text-red-400 border-red-500/30 animate-pulse'
@@ -261,7 +261,7 @@ export default function App() {
               </span>
             )}
             {phase === 'setup' && (
-              <span className="text-sm font-semibold px-4 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+              <span className="text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
                 Setup Phase
               </span>
             )}
@@ -269,13 +269,13 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-[1400px] mx-auto px-6 py-6">
+      <main className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Setup controls */}
         {phase === 'setup' && (
-          <div className="mb-6 bg-slate-800/50 border border-cyan-900/30 rounded-xl p-4 flex flex-wrap items-center gap-3">
+          <div className="mb-4 sm:mb-6 bg-slate-800/50 border border-cyan-900/30 rounded-xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3">
             {!allPlaced && currentShipDef && (
               <>
-                <span className="text-sm text-slate-300">
+                <span className="text-xs sm:text-sm text-slate-300 w-full sm:w-auto">
                   Place your{' '}
                   <strong className="text-cyan-300">
                     {currentShipDef.name}
@@ -288,7 +288,7 @@ export default function App() {
                       o === 'horizontal' ? 'vertical' : 'horizontal'
                     )
                   }
-                  className="px-3 py-1.5 text-sm bg-slate-700/80 hover:bg-slate-600 rounded-lg border border-slate-500/50 transition-colors"
+                  className="px-3 py-1.5 text-xs sm:text-sm bg-slate-700/80 hover:bg-slate-600 active:bg-slate-500 rounded-lg border border-slate-500/50 transition-colors touch-manipulation"
                 >
                   {orientation === 'horizontal' ? '↔ Horizontal' : '↕ Vertical'}
                 </button>
@@ -296,20 +296,20 @@ export default function App() {
             )}
             <button
               onClick={handleRandomize}
-              className="px-3 py-1.5 text-sm bg-purple-600/80 hover:bg-purple-500 rounded-lg transition-colors"
+              className="px-3 py-1.5 text-xs sm:text-sm bg-purple-600/80 hover:bg-purple-500 active:bg-purple-400 rounded-lg transition-colors touch-manipulation"
             >
               🎲 Randomize
             </button>
             <button
               onClick={handleResetPlacement}
-              className="px-3 py-1.5 text-sm bg-slate-700/80 hover:bg-slate-600 rounded-lg border border-slate-500/50 transition-colors"
+              className="px-3 py-1.5 text-xs sm:text-sm bg-slate-700/80 hover:bg-slate-600 active:bg-slate-500 rounded-lg border border-slate-500/50 transition-colors touch-manipulation"
             >
               ↺ Reset
             </button>
             {allPlaced && (
               <button
                 onClick={handleStartBattle}
-                className="px-5 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold transition-colors shadow-lg shadow-emerald-900/30"
+                className="px-4 sm:px-5 py-2 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-400 rounded-lg font-semibold transition-colors shadow-lg shadow-emerald-900/30 touch-manipulation"
               >
                 ⚔ Start Battle
               </button>
@@ -317,14 +317,14 @@ export default function App() {
           </div>
         )}
 
-        {/* Dashboard layout */}
-        <div className="flex gap-6 items-start">
-          {/* Grids */}
-          <div className="flex flex-wrap gap-8 justify-center flex-1 min-w-0">
+        {/* Dashboard layout: column on mobile, row on lg */}
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
+          {/* Grids: stack on mobile, side-by-side on md */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 w-full lg:flex-1 lg:min-w-0">
             {/* Player grid */}
             <div className="flex flex-col items-center">
-              <div className="bg-slate-800/40 border border-cyan-900/30 rounded-xl p-4">
-                <h2 className="text-base font-semibold mb-3 text-cyan-400 flex items-center gap-2">
+              <div className="bg-slate-800/40 border border-cyan-900/30 rounded-xl p-3 sm:p-4 w-full max-w-[420px]">
+                <h2 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3 text-cyan-400 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-cyan-400" />
                   Your Fleet
                 </h2>
@@ -343,8 +343,8 @@ export default function App() {
             {/* Enemy grid */}
             {(phase === 'battle' || phase === 'gameover') && (
               <div className="flex flex-col items-center">
-                <div className="bg-slate-800/40 border border-red-900/20 rounded-xl p-4">
-                  <h2 className="text-base font-semibold mb-3 text-red-400 flex items-center gap-2">
+                <div className="bg-slate-800/40 border border-red-900/20 rounded-xl p-3 sm:p-4 w-full max-w-[420px]">
+                  <h2 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3 text-red-400 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-400" />
                     Enemy Waters
                   </h2>
@@ -359,40 +359,42 @@ export default function App() {
             )}
           </div>
 
-          {/* Side panel */}
-          <div className="w-72 shrink-0 space-y-4">
-            {/* Fleet status */}
-            {playerShips.length > 0 && (
-              <FleetStatus ships={playerShips} label="Your Ships" />
-            )}
-            {aiShips.length > 0 && (
-              <FleetStatus ships={aiShips} label="Enemy Ships" isEnemy />
-            )}
+          {/* Side panel: full-width on mobile, fixed-width on lg */}
+          <div className="w-full lg:w-72 lg:shrink-0 space-y-4">
+            {/* Fleet status: row on mobile, column on lg */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+              {playerShips.length > 0 && (
+                <FleetStatus ships={playerShips} label="Your Ships" />
+              )}
+              {aiShips.length > 0 && (
+                <FleetStatus ships={aiShips} label="Enemy Ships" isEnemy />
+              )}
+            </div>
 
             {/* Legend */}
             <div className="bg-slate-800/50 border border-cyan-900/30 rounded-xl p-3">
               <h3 className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">
                 Legend
               </h3>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+              <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded bg-slate-800/80 border border-cyan-900/40" />
+                  <span className="w-4 h-4 shrink-0 rounded bg-slate-800/80 border border-cyan-900/40" />
                   <span className="text-slate-400">Ocean</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded bg-blue-600/70 border border-blue-500/50" />
+                  <span className="w-4 h-4 shrink-0 rounded bg-blue-600/70 border border-blue-500/50" />
                   <span className="text-slate-400">Ship</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded bg-red-600/80 border border-red-500/50 flex items-center justify-center text-[8px]">🔥</span>
+                  <span className="w-4 h-4 shrink-0 rounded bg-red-600/80 border border-red-500/50 flex items-center justify-center text-[8px]">🔥</span>
                   <span className="text-slate-400">Hit</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded bg-slate-500/50 border border-slate-400/30 flex items-center justify-center text-[8px] text-slate-300">•</span>
+                  <span className="w-4 h-4 shrink-0 rounded bg-slate-500/50 border border-slate-400/30 flex items-center justify-center text-[8px] text-slate-300">•</span>
                   <span className="text-slate-400">Miss</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded bg-red-900/80 border border-red-700/50 flex items-center justify-center text-[8px] text-red-300">✕</span>
+                  <span className="w-4 h-4 shrink-0 rounded bg-red-900/80 border border-red-700/50 flex items-center justify-center text-[8px] text-red-300">✕</span>
                   <span className="text-slate-400">Sunk</span>
                 </div>
               </div>
