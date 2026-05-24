@@ -38,8 +38,8 @@ export function aiTurn(
     hitStack: [...aiState.hitStack],
   };
 
-  let targetRow: number;
-  let targetCol: number;
+  let targetRow: number | undefined;
+  let targetCol: number | undefined;
 
   // Try to pick from target queue (hunt mode after a hit)
   while (newAIState.targetQueue.length > 0) {
@@ -52,7 +52,7 @@ export function aiTurn(
   }
 
   // If no valid target from queue, pick randomly
-  if (targetRow! === undefined) {
+  if (targetRow === undefined || targetCol === undefined) {
     newAIState.mode = 'hunt';
     const available: [number, number][] = [];
     for (let r = 0; r < GRID_SIZE; r++) {

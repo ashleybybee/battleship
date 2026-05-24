@@ -3,9 +3,10 @@ import type { Ship } from '../types';
 interface FleetStatusProps {
   ships: Ship[];
   label: string;
+  isEnemy?: boolean;
 }
 
-export default function FleetStatus({ ships, label }: FleetStatusProps) {
+export default function FleetStatus({ ships, label, isEnemy }: FleetStatusProps) {
   return (
     <div className="bg-slate-800/50 border border-cyan-900/30 rounded-xl p-3">
       <h3 className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">
@@ -26,9 +27,11 @@ export default function FleetStatus({ ships, label }: FleetStatusProps) {
                   className={`w-3 h-3 rounded-sm ${
                     ship.sunk
                       ? 'bg-red-900/80'
-                      : i < ship.hits.size
-                        ? 'bg-red-500'
-                        : 'bg-blue-500/80'
+                      : isEnemy
+                        ? 'bg-slate-600/60'
+                        : i < ship.hits.size
+                          ? 'bg-red-500'
+                          : 'bg-blue-500/80'
                   }`}
                 />
               ))}

@@ -98,6 +98,10 @@ export function processShot(
     hits: new Set(s.hits),
   }));
 
+  if (newGrid[row][col] === 'hit' || newGrid[row][col] === 'miss' || newGrid[row][col] === 'sunk') {
+    return { grid: newGrid, ships: newShips, result: 'miss' };
+  }
+
   const key = `${row},${col}`;
 
   if (newGrid[row][col] === 'ship') {

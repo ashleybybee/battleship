@@ -202,15 +202,17 @@ export default function App() {
         addLog(`AI fired at ${aiLabel} - Miss!`, 'miss');
       }
 
+      setPlayerGrid(aiResult.grid);
+      setPlayerShips(aiResult.ships);
+      setAiState(aiResult.aiState);
+
       if (allShipsSunk(aiResult.ships)) {
         addLog('The AI sank all your ships! Defeat!', 'loss');
         setWinner('ai');
         setPhase('gameover');
+        return;
       }
 
-      setPlayerGrid(aiResult.grid);
-      setPlayerShips(aiResult.ships);
-      setAiState(aiResult.aiState);
       setIsPlayerTurn(true);
     }, 600);
 
@@ -364,7 +366,7 @@ export default function App() {
               <FleetStatus ships={playerShips} label="Your Ships" />
             )}
             {aiShips.length > 0 && (
-              <FleetStatus ships={aiShips} label="Enemy Ships" />
+              <FleetStatus ships={aiShips} label="Enemy Ships" isEnemy />
             )}
 
             {/* Legend */}
