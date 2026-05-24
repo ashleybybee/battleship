@@ -62,6 +62,16 @@ export function aiTurn(
         }
       }
     }
+    if (available.length === 0) {
+      return {
+        grid,
+        ships,
+        aiState: newAIState,
+        row: 0,
+        col: 0,
+        result: 'miss',
+      };
+    }
     const idx = Math.floor(Math.random() * available.length);
     [targetRow, targetCol] = available[idx];
   }

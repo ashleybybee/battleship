@@ -323,7 +323,7 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 w-full lg:flex-1 lg:min-w-0">
             {/* Player grid */}
             <div className="flex flex-col items-center">
-              <div className="bg-slate-800/40 border border-cyan-900/30 rounded-xl p-3 sm:p-4 w-full max-w-[420px]">
+              <div className="bg-slate-800/40 border border-cyan-900/30 rounded-xl p-3 sm:p-4 w-full max-w-[430px]">
                 <h2 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3 text-cyan-400 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-cyan-400" />
                   Your Fleet
@@ -343,7 +343,7 @@ export default function App() {
             {/* Enemy grid */}
             {(phase === 'battle' || phase === 'gameover') && (
               <div className="flex flex-col items-center">
-                <div className="bg-slate-800/40 border border-red-900/20 rounded-xl p-3 sm:p-4 w-full max-w-[420px]">
+                <div className="bg-slate-800/40 border border-red-900/20 rounded-xl p-3 sm:p-4 w-full max-w-[430px]">
                   <h2 className="text-sm sm:text-base font-semibold mb-2 sm:mb-3 text-red-400 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-400" />
                     Enemy Waters
