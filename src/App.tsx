@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type {
   CellState,
   Ship,
@@ -35,7 +35,7 @@ export default function App() {
   const [playerShips, setPlayerShips] = useState<Ship[]>([]);
   const [aiGrid, setAiGrid] = useState<CellState[][]>(createEmptyGrid);
   const [aiShips, setAiShips] = useState<Ship[]>([]);
-  const [, setAiState] = useState<AIState>(createAIState);
+  const [aiStateVal, setAiState] = useState<AIState>(createAIState);
   const [orientation, setOrientation] = useState<Orientation>('horizontal');
   const [currentShipIdx, setCurrentShipIdx] = useState(0);
   const [preview, setPreview] = useState<PlacementPreview | null>(null);
@@ -180,52 +180,43 @@ export default function App() {
       }
 
       setIsPlayerTurn(false);
-
-      // AI turn after a short delay
-      setTimeout(() => {
-        setPlayerGrid((prevPlayerGrid) => {
-          setPlayerShips((prevPlayerShips) => {
-            setAiState((prevAiState) => {
-              const aiResult = aiTurn(
-                prevPlayerGrid,
-                prevPlayerShips,
-                prevAiState
-              );
-
-              const aiLabel = coordToLabel(aiResult.row, aiResult.col);
-              if (aiResult.result === 'sunk') {
-                addLog(
-                  `AI fired at ${aiLabel} - Hit! AI sank your ${aiResult.sunkShipName}!`,
-                  'sunk'
-                );
-              } else if (aiResult.result === 'hit') {
-                addLog(`AI fired at ${aiLabel} - Hit!`, 'hit');
-              } else {
-                addLog(`AI fired at ${aiLabel} - Miss!`, 'miss');
-              }
-
-              if (allShipsSunk(aiResult.ships)) {
-                addLog('The AI sank all your ships! Defeat!', 'loss');
-                setWinner('ai');
-                setPhase('gameover');
-              }
-
-              // Use the callback return to update states
-              setPlayerGrid(aiResult.grid);
-              setPlayerShips(aiResult.ships);
-              setAiState(aiResult.aiState);
-              setIsPlayerTurn(true);
-
-              return prevAiState; // Return is unused; we set above
-            });
-            return prevPlayerShips; // Return is unused; we set above
-          });
-          return prevPlayerGrid; // Return is unused; we set above
-        });
-      }, 600);
     },
     [isPlayerTurn, phase, aiGrid, aiShips, addLog]
   );
+
+  // AI turn effect — fires when isPlayerTurn becomes false during battle
+  useEffect(() => {
+    if (isPlayerTurn || phase !== 'battle') return;
+
+    const timer = setTimeout(() => {
+      const aiResult = aiTurn(playerGrid, playerShips, aiStateVal);
+
+      const aiLabel = coordToLabel(aiResult.row, aiResult.col);
+      if (aiResult.result === 'sunk') {
+        addLog(
+          `AI fired at ${aiLabel} - Hit! AI sank your ${aiResult.sunkShipName}!`,
+          'sunk'
+        );
+      } else if (aiResult.result === 'hit') {
+        addLog(`AI fired at ${aiLabel} - Hit!`, 'hit');
+      } else {
+        addLog(`AI fired at ${aiLabel} - Miss!`, 'miss');
+      }
+
+      if (allShipsSunk(aiResult.ships)) {
+        addLog('The AI sank all your ships! Defeat!', 'loss');
+        setWinner('ai');
+        setPhase('gameover');
+      }
+
+      setPlayerGrid(aiResult.grid);
+      setPlayerShips(aiResult.ships);
+      setAiState(aiResult.aiState);
+      setIsPlayerTurn(true);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [isPlayerTurn, phase, playerGrid, playerShips, aiStateVal, addLog]);
 
   // Restart game
   const handleRestart = useCallback(() => {
