@@ -24,6 +24,7 @@ import Grid from './components/Grid';
 import GameLog from './components/GameLog';
 import FleetStatus from './components/FleetStatus';
 import GameOverModal from './components/GameOverModal';
+import ShipSunkModal from './components/ShipSunkModal';
 
 function coordToLabel(row: number, col: number): string {
   return `${ROW_LABELS[row]}${col + 1}`;
@@ -42,6 +43,7 @@ export default function App() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [winner, setWinner] = useState<'player' | 'ai' | null>(null);
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
+  const [sunkShipName, setSunkShipName] = useState<string | null>(null);
 
   const addLog = useCallback((message: string, type: LogEntry['type']) => {
     setLogs((prev) => [...prev, { message, type }]);
@@ -165,22 +167,25 @@ export default function App() {
       const label = coordToLabel(row, col);
       if (result.result === 'sunk') {
         addLog(`You fired at ${label} - Hit! You sank the ${result.sunkShipName}!`, 'sunk');
+
+        if (allShipsSunk(result.ships)) {
+          addLog('You sank all enemy ships! Victory!', 'win');
+          setWinner('player');
+          setPhase('gameover');
+          return;
+        }
+
+        setSunkShipName(result.sunkShipName ?? null);
+        return;
       } else if (result.result === 'hit') {
         addLog(`You fired at ${label} - Hit!`, 'hit');
       } else {
         addLog(`You fired at ${label} - Miss!`, 'miss');
       }
 
-      if (allShipsSunk(result.ships)) {
-        addLog('You sank all enemy ships! Victory!', 'win');
-        setWinner('player');
-        setPhase('gameover');
-        return;
-      }
-
       setIsPlayerTurn(false);
     },
-    [isPlayerTurn, phase, aiGrid, aiShips, addLog]
+    [isPlayerTurn, phase, aiGrid, aiShips, addLog, setSunkShipName]
   );
 
   // AI turn effect
@@ -233,6 +238,7 @@ export default function App() {
     setLogs([]);
     setWinner(null);
     setIsPlayerTurn(true);
+    setSunkShipName(null);
   }, []);
 
   const allPlaced = currentShipIdx >= FLEET.length;
@@ -405,6 +411,17 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {/* Ship sunk celebration modal */}
+      {sunkShipName && (
+        <ShipSunkModal
+          shipName={sunkShipName}
+          onClose={() => {
+            setSunkShipName(null);
+            setIsPlayerTurn(false);
+          }}
+        />
+      )}
 
       {/* Game over modal */}
       {phase === 'gameover' && winner && (
